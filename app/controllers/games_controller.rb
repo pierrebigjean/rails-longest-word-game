@@ -7,17 +7,21 @@ class GamesController < ApplicationController
     10.times do |letter|
       @letters << ("A".."Z").to_a[rand(25)]
     end
+    @start_time = Time.now
   end
 
   def score
+    @time = Time.now - Time.parse(params[:start_time])
     @try = params[:try]
     @letters = params[:letters]
+
     user_input = @try.chars.sort.join.downcase
     original_array = @letters.chars.sort.join.downcase
 
-    if wagon_dico(user_input)["found"] == false
+    if wagon_dico(@try)["found"] == false
       @not_english = "Sorry but #{@try} is not an English word"
     elsif count(user_input, original_array)
+      @score = "Your score is #{(user_input.length * 100 / @time).round()}"
       @win = "Congratulations! #{@try} is a valid English word"
     else
       @lose = "Sorry but #{@try} can't be built out of #{@letters}"
